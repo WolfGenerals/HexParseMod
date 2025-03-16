@@ -15,6 +15,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -41,7 +42,12 @@ public class ParserMain {
     }
 
     public static synchronized CompoundTag ParseCode(String code, ServerPlayer caller) {
-        return ParseCode(CodeCutter.splitCode(code), caller);
+//        return ParseCode(CodeCutter.splitCode(code), caller);
+        try {
+            return TagParser.parseTag(code);
+        }catch (Throwable e){
+            return new CompoundTag();
+        }
     }
 
     public static synchronized CompoundTag ParseCode(List<String> nodes, ServerPlayer caller) {

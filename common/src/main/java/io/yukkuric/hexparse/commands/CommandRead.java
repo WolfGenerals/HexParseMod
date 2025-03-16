@@ -5,26 +5,39 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.yukkuric.hexparse.misc.CodeHelpers;
 import io.yukkuric.hexparse.misc.StringProcessors;
+import io.yukkuric.hexparse.parsers.ParserMain;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
+import static io.yukkuric.hexparse.misc.CodeHelpers.getFocusItem;
+
 public class CommandRead {
     public static void init(LiteralArgumentBuilder<CommandSourceStack> cmd) {
         cmd.then(
-                Commands.literal("read").executes(ctx -> readHand(ctx, code -> CodeHelpers.displayCode(ctx.getSource().getPlayer(), code)))
+                Commands.literal("read").executes(ctx -> {
+                    ItemStack focus = getFocusItem(ctx.getSource().getPlayer());
+                    if (focus == null) return 0;
+                    CompoundTag tag = focus.getTagElement("data");
+                    if (tag == null) return 0;
+                    String code = tag.getAsString();
+                    CodeHelpers.displayCode(ctx.getSource().getPlayer(), code);
+                    return 1919810;
+                })
         ).then(
                 Commands.literal("read_hexbug").executes(ctx -> readHand(ctx, StringProcessors.READ_HEXBOT_VARIANT, code -> CodeHelpers.displayCode(ctx.getSource().getPlayer(), code)))
         ).then(
                 Commands.literal("share").executes(ctx -> readHand(ctx, code -> {
                     var p = ctx.getSource().getPlayer();
                     if (p == null) return;
-                    var item = CodeHelpers.getFocusItem(p);
+                    var item = getFocusItem(p);
                     var iota = ((ItemFocus) item.getItem()).readIota(item, (ServerLevel) p.level);
                     if (iota == null) return;
                     var shared = Component.translatable("hexparse.cmd.read.share",

@@ -11,8 +11,10 @@ object ActionFocus2Code : ConstMediaAction {
 
     override fun execute(args: List<Iota>, ctx: CastingContext): List<Iota> {
         if (ctx.source != CastingContext.CastSource.STAFF) throw MishapDisallowedSpell()
-        var player = ctx.caster
-        var code = CodeHelpers.readHand(player)
+        val player = ctx.caster
+        val focus = CodeHelpers.getFocusItem(player) ?: return listOf()
+        val tag = focus.getTagElement("data") ?: return listOf()
+        val code = tag.asString
         CodeHelpers.displayCode(player, code)
         return listOf()
     }

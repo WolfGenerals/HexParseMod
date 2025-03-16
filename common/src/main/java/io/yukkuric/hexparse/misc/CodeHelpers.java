@@ -111,7 +111,11 @@ public interface CodeHelpers {
 
     static void displayCode(ServerPlayer player, String code) {
         if (player == null || code == null) return;
-        var display = Component.translatable("hexparse.cmd.read.display", Component.literal(code).withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.GREEN);
+        MutableComponent literal = Component.literal(code);
+        if (code.length()> 50){
+            literal = Component.literal(code.substring(0, 50) + "...");
+        }
+        var display = Component.translatable("hexparse.cmd.read.display", literal.withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.GREEN);
         player.sendSystemMessage(wrapClickCopy(display, code));
     }
 

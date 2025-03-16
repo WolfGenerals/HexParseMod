@@ -12,14 +12,12 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.ArrayList;
 import java.util.List;
 
-public record MsgPushClipboard(List<String> code, String rename, ClipboardMsgMode mode) implements IMessage {
+public record MsgPushClipboard(String code, String rename, ClipboardMsgMode mode) implements IMessage {
     public static final ResourceLocation ID = new ResourceLocation(HexParse.MOD_ID, "clipboard/push");
 
     @Override
     public void serialize(FriendlyByteBuf buf) {
-        buf.writeInt(code.size());
-        for (var f : code)
-            MsgHelpers.putString(buf, f);
+        MsgHelpers.putString(buf, code);
         MsgHelpers.putString(buf, rename);
         buf.writeByte(mode.ordinal());
     }
@@ -31,9 +29,7 @@ public record MsgPushClipboard(List<String> code, String rename, ClipboardMsgMod
 
     public static MsgPushClipboard deserialize(ByteBuf buffer) {
         var buf = new FriendlyByteBuf(buffer);
-        var code = new ArrayList<String>();
-        var len = buf.readInt();
-        for (int i = 0; i < len; i++) code.add(MsgHelpers.getString(buf));
+        var code = MsgHelpers.getString(buf);
         var name = MsgHelpers.getString(buf);
         ClipboardMsgMode mode;
         try {

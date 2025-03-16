@@ -49,13 +49,8 @@ public record MsgPullClipboard(String rename, ClipboardMsgMode mode) implements 
             var matched = ANGLES.matcher(code).results().map(x -> '_' + x.group());
             code = String.join(" ", matched.toList());
         }
-        if (code.length() > MAX_LENGTH) {
-            if (MC.player != null)
-                MC.player.sendSystemMessage(Component.translatable("hexparse.msg.error.code_too_long", code.length()));
-            return;
-        }
         CodeHelpers.autoRefreshLocal();
         if (self.mode != ClipboardMsgMode.INVALID)
-            MsgHandlers.CLIENT.sendPacketToServer(new MsgPushClipboard(ParserMain.preMatchClipboardClient(code), self.rename, self.mode));
+            MsgHandlers.CLIENT.sendPacketToServer(new MsgPushClipboard(code, self.rename, self.mode));
     }
 }
